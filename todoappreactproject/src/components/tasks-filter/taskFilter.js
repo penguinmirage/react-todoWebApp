@@ -10,7 +10,7 @@ export default class TasksFilter extends Component {
   ];
 
   render() {
-    const { filter, onFilterChange } = this.props;
+    const { filter, onFilterChange, onCleared } = this.props;
 
     const buttons = this.buttons.map(({ name, label }) => {
       const isActive = filter === name;
@@ -31,7 +31,7 @@ export default class TasksFilter extends Component {
     return (
       <ul className="btn-group filters">
         <li>{buttons}</li>
-        <li type="button" className="clear-completed">
+        <li type="button" className="clear-completed" onClick={onCleared}>
           Clear completed
         </li>
       </ul>

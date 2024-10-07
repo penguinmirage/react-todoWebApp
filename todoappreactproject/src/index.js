@@ -16,9 +16,9 @@ export default class App extends Component {
 
   state = {
     todoData: [
-      { label: "Drink Coffee", important: false, id: 1 },
-      { label: "Make awesome App", important: true, id: 2 },
-      { label: "Build great applications", important: false, id: 3 },
+      // { label: "Drink Coffee", important: false, id: 1 },
+      // { label: "Make awesome App", important: true, id: 2 },
+      // { label: "Build great applications", important: false, id: 3 },
     ],
     term: "",
     filter: "",
@@ -47,13 +47,6 @@ export default class App extends Component {
         todoData: newArray,
       };
     });
-  };
-
-  clearCompleted = (id) => {
-    if (this.state.done) {
-      this.deleteItem(id);
-      console.log("I just deleted all done things!");
-    }
   };
 
   addItem = (text) => {
@@ -137,6 +130,15 @@ export default class App extends Component {
     this.setState({ filter });
   };
 
+  onCleared = () => {
+    this.setState(({ todoData }) => {
+      const newTodoData = todoData.filter((item) => !item.done);
+      return {
+        todoData: newTodoData,
+      };
+    });
+  };
+
   render() {
     const { todoData, term, filter } = this.state;
     const visibleItems = this.filter(this.search(todoData, term), filter);
@@ -155,7 +157,11 @@ export default class App extends Component {
         />
         <div className="footer">
           <Footer count={todoCount} />
-          <TasksFilter filter={filter} onFilterChange={this.onFilterChange} />
+          <TasksFilter
+            filter={filter}
+            onFilterChange={this.onFilterChange}
+            onCleared={this.onCleared}
+          />
         </div>
       </div>
     );
