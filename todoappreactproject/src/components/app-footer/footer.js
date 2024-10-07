@@ -5,8 +5,8 @@ function Footer({ count }) {
   // необходима константа для работы счетчика {}
 
   return (
-    <div className="footer">
-      <span className="todo-count">{count} items left</span>
+    <div className="todo-count">
+      <span>{count} items left</span>
     </div>
   );
 }

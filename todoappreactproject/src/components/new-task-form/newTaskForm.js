@@ -4,7 +4,6 @@ import "./newTaskForm.css";
 export default class NewTaskForm extends Component {
   state = {
     label: "",
-    todoData: [{ label: null, important: false, id: null }],
   };
 
   onLabelChange = (e) => {
@@ -16,33 +15,43 @@ export default class NewTaskForm extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     this.props.addItem(this.state.label);
+    this.setState({
+      label: "",
+    });
+  };
+
+  onEdit = (e) => {
+    e.preventDefault();
   };
 
   render() {
     return (
-      <form className="new-todo" onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit}>
         <input
+          type="text"
           className="new-todo"
-          placeholder="What needs to be done?"
-          autoFocus
           onChange={this.onLabelChange}
-          //onKeyDown={(e) => {
-          // if (e.key === "Enter") {
-          //   console.log("Enter key pressed");
-          //   this.props.addItem("Hello World Text");
-          // }
-          //}}
+          placeholder="What needs to be done?"
+          value={this.state.label}
         />
       </form>
     );
   }
 }
 
-// {" "}
-//   <button
-//     className="btn btn-outline-secondary"
-//     onClick={() => this.props.addItem("Hello World")}
-//   >
-//     Save
-//   </button>{" "}
-//
+// return (
+// <form className="new-todo" onSubmit={this.onSubmit}>
+//   <input
+//     className="new-todo"
+//     placeholder="What needs to be done?"
+//     autoFocus
+//     onChange={this.onLabelChange}
+//     value={this.state.label}
+//   />
+// </form>
+//<button
+//  className="btn btn-outline-secondary"
+//  /* onClick={() => this.props.addItem("Hello World")} */
+//>
+//  Add Item
+//</button>

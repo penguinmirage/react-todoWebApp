@@ -6,7 +6,7 @@
   left: 0;
 }
 
-.filters li {
+.filters {
   display: inline;
   cursor: default;
 }
@@ -25,16 +25,16 @@
   cursor: pointer;
 }
 
-.filters li:hover button {
+.filters:hover button {
   border-color: rgba(175, 47, 47, 0.1);
 }
 
-.filters li button.selected {
+.filters .selected {
   border-color: rgba(175, 47, 47, 0.2);
 }
 
 .clear-completed,
-html .clear-completed:active {
+.clear-completed:active {
   position: relative;
   line-height: 20px;
   text-decoration: none;

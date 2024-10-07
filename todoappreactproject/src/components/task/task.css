@@ -117,7 +117,7 @@
   text-decoration: line-through;
 }
 
-.todo-list-item.done .description {
+.done {
   text-decoration: line-through;
   color: #d9d9d9; /* Optional: to make the text look dimmed when done */
 }
