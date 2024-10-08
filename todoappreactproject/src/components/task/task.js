@@ -21,7 +21,7 @@ export default class TodoListItem extends Component {
         />
         <label className="todo-list-item" onClick={onToggleDone}>
           <span className={classNames}>{label}</span>
-          <span className="created">some date info here</span>
+          <span className="created">created N seconds / minutes ago</span>
         </label>
 
         <div type="button" className="btn">
