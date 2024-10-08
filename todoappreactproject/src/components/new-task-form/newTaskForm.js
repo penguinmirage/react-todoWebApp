@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import "./newTaskForm.css";
 
 export default class NewTaskForm extends Component {
@@ -14,7 +15,7 @@ export default class NewTaskForm extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.props.addItem(this.state.label);
+    this.props.addItem(this.state.label || this.props.defaultLabel);
     this.setState({
       label: "",
     });
@@ -38,6 +39,10 @@ export default class NewTaskForm extends Component {
     );
   }
 }
+
+NewTaskForm.defaultProps = {
+  defaultLabel: "Empty task added",
+};
 
 // return (
 // <form className="new-todo" onSubmit={this.onSubmit}>

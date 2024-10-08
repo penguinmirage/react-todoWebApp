@@ -1,11 +1,10 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import AppHeader from "./components/app-header/app-header";
 import TaskList from "./components/task-list/task-list";
 import TasksFilter from "./components/tasks-filter";
 import NewTaskForm from "./components/new-task-form";
 import Footer from "./components/app-footer";
-import Task from "./components/task";
-// import SearchPanel from "./components/search/search";
 import "./index.css";
 import { createRoot } from "react-dom/client";
 const container = document.getElementById("app");
@@ -50,16 +49,7 @@ export default class App extends Component {
   };
 
   addItem = (text) => {
-    // console.log("added", text);
-    // geerate id
-    // const newItem = {
-    //   label: text,
-    //   important: false,
-    //   id: this.maxId++,
-    // };
     const newItem = this.createTodoItem(text);
-
-    // add element to an array
     this.setState(({ todoData }) => {
       const newArr = [...todoData, newItem];
       return {
@@ -67,28 +57,32 @@ export default class App extends Component {
       };
     });
   };
-  //функция шаблон для послежующего использования toggle'ов
+
+  editItem = (id, editedItem) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id);
+      todoData.splice(idx, 1);
+      const oldDataFile = todoData[idx];
+      const updatedDataFile = { ...oldDataFile, label: editedItem };
+      const updatedTodoDataArray = [
+        ...todoData.slice(0, idx),
+        updatedDataFile,
+        ...todoData.slice(idx + 1),
+      ];
+      return {
+        todoData: updatedTodoDataArray,
+      };
+    });
+  };
+
   toggleProperty(arr, id, propName) {
     const idx = arr.findIndex((el) => el.id === id);
-    // 1. update object
+
     const oldItem = arr[idx];
     const newItem = { ...oldItem, [propName]: !oldItem[propName] };
 
-    //2. construct new Array
-    // const before = todoData.slice(0, idx);
-    // const after = todoData.slice(idx + 1);
-    // const newArray = [...before, newItem, ...after];
     return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
   }
-
-  onToggleImportant = (id) => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: this.toggleProperty(todoData, id, "important"),
-      };
-    });
-    console.log("Toggle important", id);
-  };
 
   onToggleDone = (id) => {
     this.setState(({ todoData }) => {
@@ -152,6 +146,7 @@ export default class App extends Component {
         <TaskList
           todos={visibleItems}
           onDeleted={this.deleteItem}
+          onEdited={this.editItem}
           onToggleImportant={this.onToggleImportant}
           onToggleDone={this.onToggleDone}
         />

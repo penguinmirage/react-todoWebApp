@@ -2,29 +2,76 @@ import React, { Component } from "react";
 import "./task.css";
 
 export default class TodoListItem extends Component {
+  state = {
+    isEditing: false,
+    editedTask: this.props.label,
+  };
+
+  beginEditing = () => {
+    this.setState({ isEditing: true }); // Enters the edit mode
+  };
+
+  whatIsEditing = (e) => {
+    this.setState({ editedTask: e.target.value }); // Works while we edit
+  };
+
+  saveChangesEditing = (e) => {
+    e.preventDefault();
+    const { editedTask } = this.state;
+    const { onEdited } = this.props;
+
+    if (editedTask.trim()) {
+      onEdited(editedTask);
+      this.setState({ isEditing: false });
+    }
+  }; // Exit edit mode
+
+  // Save changes if Enter key is pressed
+  saveOnEnterKeyDown = (e) => {
+    if (e.key === "Enter") {
+      this.saveChangesEditing(e);
+    }
+  };
+
   render() {
     const { label, onDeleted, onToggleDone, done } = this.props;
+    const { isEditing, editedTask } = this.state;
 
-    // Set up className based on `done` state to apply the line-through effect
     let classNames = "todo-list-item description";
     if (done) {
       classNames += " done completed";
     }
+
+    // для isEditing делаем тернарник: ?едитТаск :обычныйТаск
 
     return (
       <span className="todo-list">
         <input
           className="toggle"
           type="checkbox"
-          onClick={onToggleDone}
+          onChange={onToggleDone}
           checked={done}
         />
-        <label className="todo-list-item" onClick={onToggleDone}>
-          <span className={classNames}>{label}</span>
-          <span className="created">created N seconds / minutes ago</span>
-        </label>
+        {isEditing ? (
+          <li className="editing">
+            <input
+              type="text"
+              value={editedTask}
+              onChange={this.whatIsEditing}
+              onKeyDown={this.saveOnEnterKeyDown}
+              className="edit"
+              onSubmit={this.saveChangesEditing}
+              autoFocus
+            />
+          </li>
+        ) : (
+          <label className="todo-list-item" onClick={onToggleDone}>
+            <span className={classNames}>{label}</span>
+            <span className="created">some date info here</span>
+          </label>
+        )}
 
-        <div type="button" className="btn">
+        <div type="button" className="btn" onClick={this.beginEditing}>
           <i className="icon icon-edit" />
         </div>
 
@@ -35,6 +82,9 @@ export default class TodoListItem extends Component {
     );
   }
 }
+TodoListItem.defaultProps = {
+  filter: "all", // Default value for the filter prop
+};
 
 // export default class Task extends Component {
 //   state = {

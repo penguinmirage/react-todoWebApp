@@ -2,7 +2,13 @@ import React from "react";
 import Task from "../task";
 import "./task-list.css";
 
-const TaskList = ({ todos, onDeleted, onToggleImportant, onToggleDone }) => {
+const TaskList = ({
+  todos,
+  onDeleted,
+  onToggleImportant,
+  onToggleDone,
+  onEdited,
+}) => {
   const elements = todos.map((item) => {
     const { id, ...itemProps } = item;
 
@@ -11,6 +17,7 @@ const TaskList = ({ todos, onDeleted, onToggleImportant, onToggleDone }) => {
         <Task
           {...itemProps}
           onDeleted={() => onDeleted(id)}
+          onEdited={(editedLabel) => onEdited(id, editedLabel)}
           onToggleImportant={() => onToggleImportant(id)}
           onToggleDone={() => onToggleDone(id)}
         />
