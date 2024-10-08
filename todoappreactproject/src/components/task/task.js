@@ -1,10 +1,13 @@
 import React, { Component } from "react";
+import { formatDistanceToNow } from "date-fns";
 import "./task.css";
 
 export default class TodoListItem extends Component {
   state = {
     isEditing: false,
     editedTask: this.props.label,
+    createdTime: new Date(),
+    editedTime: null,
   };
 
   beginEditing = () => {
@@ -22,7 +25,7 @@ export default class TodoListItem extends Component {
 
     if (editedTask.trim()) {
       onEdited(editedTask);
-      this.setState({ isEditing: false });
+      this.setState({ isEditing: false, editedTime: new Date() });
     }
   }; // Exit edit mode
 
@@ -30,6 +33,27 @@ export default class TodoListItem extends Component {
   saveOnEnterKeyDown = (e) => {
     if (e.key === "Enter") {
       this.saveChangesEditing(e);
+    }
+  };
+
+  createTimestamp = () => {
+    const { createdTime, editedTime } = this.state;
+    if (editedTime) {
+      return `edited ${formatDistanceToNow(
+        new Date(editedTime),
+        { includeSeconds: true },
+        {
+          addSuffix: true,
+        }
+      )}`;
+    } else {
+      return `created ${formatDistanceToNow(
+        new Date(createdTime),
+        { includeSeconds: true },
+        {
+          addSuffix: true,
+        }
+      )}`;
     }
   };
 
@@ -67,7 +91,7 @@ export default class TodoListItem extends Component {
         ) : (
           <label className="todo-list-item" onClick={onToggleDone}>
             <span className={classNames}>{label}</span>
-            <span className="created">some date info here</span>
+            <span className="created">{this.createTimestamp()}</span>
           </label>
         )}
 
