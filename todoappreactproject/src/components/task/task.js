@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { formatDistanceToNow } from "date-fns";
+import PropTypes from "prop-types";
 import "./task.css";
 
 export default class TodoListItem extends Component {
@@ -108,6 +109,10 @@ export default class TodoListItem extends Component {
 }
 TodoListItem.defaultProps = {
   filter: "all", // Default value for the filter prop
+};
+
+TodoListItem.propTypes = {
+  filter: PropTypes.string,
 };
 
 // export default class Task extends Component {

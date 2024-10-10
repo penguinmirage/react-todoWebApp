@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./newTaskForm.css";
+import PropTypes from "prop-types";
 
 export default class NewTaskForm extends Component {
   state = {
@@ -41,6 +42,10 @@ export default class NewTaskForm extends Component {
 
 NewTaskForm.defaultProps = {
   defaultLabel: "Empty task added",
+};
+
+NewTaskForm.propTypes = {
+  defaultLabel: PropTypes.string,
 };
 
 // return (

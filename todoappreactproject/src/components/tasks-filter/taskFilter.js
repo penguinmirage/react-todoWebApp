@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 export default class TasksFilter extends Component {
   // необходима константа для работы счетчика {}
@@ -38,3 +39,11 @@ export default class TasksFilter extends Component {
     );
   }
 }
+
+TasksFilter.defaultProps = {
+  buttons: { name: "all", label: "All" },
+};
+
+TasksFilter.propTypes = {
+  buttons: PropTypes.object,
+};
