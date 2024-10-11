@@ -1,14 +1,9 @@
-import React from "react";
-import Task from "../task";
-import "./task-list.css";
+import React from 'react'
 
-const TaskList = ({
-  todos,
-  onDeleted,
-  onToggleImportant,
-  onToggleDone,
-  onEdited,
-}) => {
+import Task from '../task'
+import './task-list.css'
+
+const TaskList = ({ todos, onDeleted, onToggleImportant, onToggleDone, onEdited }) => {
   const elements = todos.map((item) => {
     const { id, ...itemProps } = item;
 
@@ -23,9 +18,9 @@ const TaskList = ({
         />
       </li>
     );
-  });
+  })
 
   return <ul className="todo-list">{elements}</ul>;
-};
+}
 
 export default TaskList;

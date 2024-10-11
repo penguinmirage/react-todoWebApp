@@ -1,5 +1,5 @@
-import React from "react";
-import "./footer.css";
+import React from 'react'
+import './footer.css'
 
 function Footer({ count }) {
   // необходима константа для работы счетчика {}

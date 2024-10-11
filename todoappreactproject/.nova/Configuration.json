@@ -1,0 +1,4 @@
+{
+  "apexskier.eslint.config.eslintConfigPath" : ".eslintrc",
+  "apexskier.eslint.config.fixOnSave" : "Enable"
+}
