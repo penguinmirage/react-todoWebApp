@@ -65,7 +65,9 @@
   },
   "lint-staged": {
     "*.js": [
+      "npm run lint",
       "npm run lint:fix",
+      "prettier --write --ignore-unknown",
       "git add"
     ]
   }
