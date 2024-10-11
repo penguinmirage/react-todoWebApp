@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class TasksFilter extends Component {
   // необходима константа для работы счетчика {}
 
   buttons = [
-    { name: "all", label: "All" },
-    { name: "active", label: "Active" },
-    { name: "done", label: "Completed" },
+    { name: 'all', label: 'All' },
+    { name: 'active', label: 'Active' },
+    { name: 'done', label: 'Completed' },
   ];
 
   render() {
@@ -15,15 +15,10 @@ export default class TasksFilter extends Component {
 
     const buttons = this.buttons.map(({ name, label }) => {
       const isActive = filter === name;
-      const clazz = isActive ? "selected" : "btn-outline-secondary";
+      const clazz = isActive ? 'selected' : 'btn-outline-secondary';
 
       return (
-        <button
-          type="button"
-          className={`btn ${clazz}`}
-          key={name}
-          onClick={() => onFilterChange(name)}
-        >
+        <button type="button" className={`btn ${clazz}`} key={name} onClick={() => onFilterChange(name)}>
           {label}
         </button>
       );
@@ -41,9 +36,12 @@ export default class TasksFilter extends Component {
 }
 
 TasksFilter.defaultProps = {
-  buttons: { name: "all", label: "All" },
+  buttons: { name: 'all', label: 'All' },
 };
 
 TasksFilter.propTypes = {
   buttons: PropTypes.object,
+  filter: PropTypes.string,
+  onFilterChange: PropTypes.string,
+  onCleared: PropTypes.array,
 };

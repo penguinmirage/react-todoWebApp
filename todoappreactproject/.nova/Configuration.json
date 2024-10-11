@@ -1,5 +1,5 @@
 {
-  "apexskier.eslint.config.eslintConfigPath" : ".eslintrc",
+  "apexskier.eslint.config.eslintConfigPath" : ".eslintrc.json",
   "apexskier.eslint.config.eslintRulesDirs" : [
     "."
   ],

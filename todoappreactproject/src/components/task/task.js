@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { formatDistanceToNow } from "date-fns";
-import PropTypes from "prop-types";
-import "./task.css";
+import React, { Component } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import PropTypes from 'prop-types';
+import './task.css';
 
 export default class TodoListItem extends Component {
   state = {
@@ -32,7 +32,7 @@ export default class TodoListItem extends Component {
 
   // Save changes if Enter key is pressed
   saveOnEnterKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       this.saveChangesEditing(e);
     }
   };
@@ -62,21 +62,16 @@ export default class TodoListItem extends Component {
     const { label, onDeleted, onToggleDone, done } = this.props;
     const { isEditing, editedTask } = this.state;
 
-    let classNames = "todo-list-item description";
+    let classNames = 'todo-list-item description';
     if (done) {
-      classNames += " done completed";
+      classNames += ' done completed';
     }
 
     // для isEditing делаем тернарник: ?едитТаск :обычныйТаск
 
     return (
       <span className="todo-list">
-        <input
-          className="toggle"
-          type="checkbox"
-          onChange={onToggleDone}
-          checked={done}
-        />
+        <input className="toggle" type="checkbox" onChange={onToggleDone} checked={done} />
         {isEditing ? (
           <li className="editing">
             <input
@@ -108,11 +103,16 @@ export default class TodoListItem extends Component {
   }
 }
 TodoListItem.defaultProps = {
-  filter: "all", // Default value for the filter prop
+  filter: 'all', // Default value for the filter prop
 };
 
 TodoListItem.propTypes = {
   filter: PropTypes.string,
+  label: PropTypes.string,
+  onEdited: PropTypes.object,
+  onDeleted: PropTypes.number,
+  onToggleDone: PropTypes.bool,
+  done: PropTypes.bool,
 };
 
 // export default class Task extends Component {

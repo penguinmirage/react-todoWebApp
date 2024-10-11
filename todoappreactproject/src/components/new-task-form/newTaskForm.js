@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import "./newTaskForm.css";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import './newTaskForm.css';
+import PropTypes from 'prop-types';
 
 export default class NewTaskForm extends Component {
   state = {
-    label: "",
+    label: '',
   };
 
   onLabelChange = (e) => {
@@ -17,7 +17,7 @@ export default class NewTaskForm extends Component {
     e.preventDefault();
     this.props.addItem(this.state.label || this.props.defaultLabel);
     this.setState({
-      label: "",
+      label: '',
     });
   };
 
@@ -41,11 +41,12 @@ export default class NewTaskForm extends Component {
 }
 
 NewTaskForm.defaultProps = {
-  defaultLabel: "Empty task added",
+  defaultLabel: 'Empty task added',
 };
 
 NewTaskForm.propTypes = {
   defaultLabel: PropTypes.string,
+  addItem: PropTypes.object,
 };
 
 // return (

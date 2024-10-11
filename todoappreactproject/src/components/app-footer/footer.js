@@ -1,5 +1,6 @@
-import React from 'react'
-import './footer.css'
+import React from 'react';
+import './footer.css';
+import PropTypes from 'prop-types';
 
 function Footer({ count }) {
   // необходима константа для работы счетчика {}
@@ -12,3 +13,7 @@ function Footer({ count }) {
 }
 
 export default Footer;
+
+Footer.propTypes = {
+  count: PropTypes.number,
+};
