@@ -15,10 +15,12 @@ export default class NewTaskForm extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.props.addItem(this.state.label || this.props.defaultLabel);
-    this.setState({
-      label: '',
-    });
+    if (this.state.label.trim() !== '') {
+      this.props.addItem(this.state.label);
+      this.setState({
+        label: '',
+      });
+    }
   };
 
   onEdit = (e) => {
@@ -46,7 +48,7 @@ NewTaskForm.defaultProps = {
 
 NewTaskForm.propTypes = {
   defaultLabel: PropTypes.string,
-  addItem: PropTypes.object,
+  addItem: PropTypes.func.isRequired,
 };
 
 // return (
