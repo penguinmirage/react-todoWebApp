@@ -1,46 +1,35 @@
-import React, { Component } from 'react';
+// новая версия на хуке useState
+import React, { useState } from 'react';
 import './newTaskForm.css';
 import PropTypes from 'prop-types';
 
-export default class NewTaskForm extends Component {
-  state = {
-    label: '',
+const NewTaskForm = ({ addItem }) => {
+  const [label, setLabel] = useState('');
+
+  const onLabelChange = (e) => {
+    setLabel(e.target.value);
   };
 
-  onLabelChange = (e) => {
-    this.setState({
-      label: e.target.value,
-    });
-  };
-
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    if (this.state.label.trim() !== '') {
-      this.props.addItem(this.state.label);
-      this.setState({
-        label: '',
-      });
+    if (label.trim() !== '') {
+      addItem(label);
+      setLabel(''); // Reset input after adding the item
     }
   };
 
-  onEdit = (e) => {
-    e.preventDefault();
-  };
-
-  render() {
-    return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          type="text"
-          className="new-todo"
-          onChange={this.onLabelChange}
-          placeholder="What needs to be done?"
-          value={this.state.label}
-        />
-      </form>
-    );
-  }
-}
+  return (
+    <form onSubmit={onSubmit}>
+      <input
+        type="text"
+        className="new-todo"
+        onChange={onLabelChange}
+        placeholder="What needs to be done?"
+        value={label}
+      />
+    </form>
+  );
+};
 
 NewTaskForm.defaultProps = {
   defaultLabel: 'Empty task added',
@@ -51,19 +40,59 @@ NewTaskForm.propTypes = {
   addItem: PropTypes.func.isRequired,
 };
 
-// return (
-// <form className="new-todo" onSubmit={this.onSubmit}>
-//   <input
-//     className="new-todo"
-//     placeholder="What needs to be done?"
-//     autoFocus
-//     onChange={this.onLabelChange}
-//     value={this.state.label}
-//   />
-// </form>
-//<button
-//  className="btn btn-outline-secondary"
-//  /* onClick={() => this.props.addItem("Hello World")} */
-//>
-//  Add Item
-//</button>
+export default NewTaskForm;
+
+// Предыдущая версия на класс-компоненте:
+//
+// import React, { Component } from 'react';
+// import './newTaskForm.css';
+// import PropTypes from 'prop-types';
+//
+// export default class NewTaskForm extends Component {
+//   state = {
+//     label: '',
+//   };
+//
+//   onLabelChange = (e) => {
+//     this.setState({
+//       label: e.target.value,
+//     });
+//   };
+//
+//   onSubmit = (e) => {
+//     e.preventDefault();
+//     if (this.state.label.trim() !== '') {
+//       this.props.addItem(this.state.label);
+//       this.setState({
+//         label: '',
+//       });
+//     }
+//   };
+//
+//   onEdit = (e) => {
+//     e.preventDefault();
+//   };
+//
+//   render() {
+//     return (
+//       <form onSubmit={this.onSubmit}>
+//         <input
+//           type="text"
+//           className="new-todo"
+//           onChange={this.onLabelChange}
+//           placeholder="What needs to be done?"
+//           value={this.state.label}
+//         />
+//       </form>
+//     );
+//   }
+// }
+//
+// NewTaskForm.defaultProps = {
+//   defaultLabel: 'Empty task added',
+// };
+//
+// NewTaskForm.propTypes = {
+//   defaultLabel: PropTypes.string,
+//   addItem: PropTypes.func.isRequired,
+// };
