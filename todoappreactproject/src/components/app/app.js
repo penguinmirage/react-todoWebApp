@@ -1,5 +1,4 @@
-// переписанный компонент App на хуки
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import AppHeader from '../app-header/';
 import TaskList from '../task-list';
 import TasksFilter from '../tasks-filter';
@@ -7,107 +6,202 @@ import NewTaskForm from '../new-task-form';
 import Footer from '../app-footer';
 import './app.css';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 const App = () => {
-	const [todoData, setTodoData] = useState([]);
-	const [term, setTerm] = useState('');
-	const [filter, setFilter] = useState('all');
+  const [todoData, setTodoData] = useState([]);
+  const [term, setTerm] = useState('');
+  const [filter, setFilter] = useState('');
 
-	let maxId = 100;
+  const createTodoItem = (label) => ({
+    label,
+    important: false,
+    done: false,
+    id: uuidv4(),
+    isNewTask: true,
+  });
 
-	const createTodoItem = label => ({
-		label,
-		important: false,
-		done: false,
-		id: maxId++,
-	});
+  const deleteItem = (id) => {
+    setTodoData((todoData) => todoData.filter((item) => item.id !== id));
+    localStorage.removeItem(`timer-${id}`);
+    localStorage.removeItem(`timerActive-${id}`);
+  };
 
-	const deleteItem = useCallback(id => {
-		setTodoData(todoData => {
-			const idx = todoData.findIndex(el => el.id === id);
-			return [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
-		});
-	}, []);
+  const addItem = (text) => {
+    const newItem = createTodoItem(text);
+    setTodoData((todoData) => [...todoData, newItem]);
+  };
 
-	const addItem = useCallback(text => {
-		const newItem = createTodoItem(text);
-		setTodoData(todoData => [...todoData, newItem]);
-	}, []);
+  const editItem = (id, editedItem) => {
+    setTodoData((todoData) => todoData.map((item) => (item.id === id ? { ...item, label: editedItem } : item)));
+  };
 
-	const editItem = useCallback((id, editedItem) => {
-		setTodoData(todoData => {
-			const idx = todoData.findIndex(el => el.id === id);
-			const oldDataFile = todoData[idx];
-			const updatedDataFile = { ...oldDataFile, label: editedItem };
-			return [...todoData.slice(0, idx), updatedDataFile, ...todoData.slice(idx + 1)];
-		});
-	}, []);
+  const toggleProperty = (arr, id, propName) =>
+    arr.map((item) => (item.id === id ? { ...item, [propName]: !item[propName] } : item));
 
-	const toggleProperty = (arr, id, propName) => {
-		const idx = arr.findIndex(el => el.id === id);
-		const oldItem = arr[idx];
-		const newItem = { ...oldItem, [propName]: !oldItem[propName] };
-		return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
-	};
+  const onToggleDone = (id) => {
+    setTodoData((todoData) => toggleProperty(todoData, id, 'done'));
+  };
 
-	const onToggleDone = useCallback(id => {
-		setTodoData(todoData => toggleProperty(todoData, id, 'done'));
-	}, []);
+  const search = (items, term) =>
+    term.length === 0 ? items : items.filter((item) => item.label.toLowerCase().includes(term.toLowerCase()));
 
-	const search = (items, term) => {
-		if (term.length === 0) return items;
-		return items.filter(item => item.label.toLowerCase().includes(term.toLowerCase()));
-	};
+  const filterItems = (items, filter) => {
+    switch (filter) {
+      case 'all':
+        return items;
+      case 'active':
+        return items.filter((item) => !item.done);
+      case 'done':
+        return items.filter((item) => item.done);
+      default:
+        return items;
+    }
+  };
 
-	const onSearchChange = useCallback(term => setTerm(term), []);
+  const onFilterChange = (newFilter) => setFilter(newFilter);
 
-	const filterItems = (items, filter) => {
-		switch (filter) {
-			case 'all':
-				return items;
-			case 'active':
-				return items.filter(item => !item.done);
-			case 'done':
-				return items.filter(item => item.done);
-			default:
-				return items;
-		}
-	};
+  const onCleared = () => setTodoData((todoData) => todoData.filter((item) => !item.done));
 
-	const onFilterChange = useCallback(filter => setFilter(filter), []);
+  const visibleItems = filterItems(search(todoData, term), filter);
+  const doneCount = todoData.filter((el) => el.done).length;
+  const todoCount = todoData.length - doneCount;
 
-	const onCleared = useCallback(() => {
-		setTodoData(todoData => todoData.filter(item => !item.done));
-	}, []);
-
-	const visibleItems = filterItems(search(todoData, term), filter);
-	const doneCount = todoData.filter(el => el.done).length;
-	const todoCount = todoData.length - doneCount;
-
-	return (
-		<div className="todoapp">
-			<AppHeader />
-			<NewTaskForm addItem={addItem} />
-			<TaskList todos={visibleItems} onDeleted={deleteItem} onEdited={editItem} onToggleDone={onToggleDone} />
-			<div className="footer">
-				<Footer count={todoCount} />
-				<TasksFilter filter={filter} onFilterChange={onFilterChange} onCleared={onCleared} />
-			</div>
-		</div>
-	);
+  return (
+    <div className="todoapp">
+      <AppHeader />
+      <NewTaskForm addItem={addItem} />
+      <TaskList todos={visibleItems} onDeleted={deleteItem} onEdited={editItem} onToggleDone={onToggleDone} />
+      <div className="footer">
+        <Footer count={todoCount} />
+        <TasksFilter filter={filter} onFilterChange={onFilterChange} onCleared={onCleared} />
+      </div>
+    </div>
+  );
 };
 
 App.defaultProps = {
-	todoData: [],
-	filter: 'all',
+  todoData: [],
+  filter: 'all',
 };
 
 App.propTypes = {
-	todoData: PropTypes.array,
-	filter: PropTypes.string,
+  todoData: PropTypes.array,
+  filter: PropTypes.string,
 };
 
 export default App;
+
+// переписанный компонент App на хуки
+// import React, { useState, useCallback } from 'react';
+// import AppHeader from '../app-header/';
+// import TaskList from '../task-list';
+// import TasksFilter from '../tasks-filter';
+// import NewTaskForm from '../new-task-form';
+// import Footer from '../app-footer';
+// import './app.css';
+// import PropTypes from 'prop-types';
+
+// const App = () => {
+// 	const [todoData, setTodoData] = useState([]);
+// 	const [term, setTerm] = useState('');
+// 	const [filter, setFilter] = useState('all');
+
+// 	let maxId = 100;
+
+// 	const createTodoItem = label => ({
+// 		label,
+// 		important: false,
+// 		done: false,
+// 		id: maxId++,
+// 	});
+
+// 	const deleteItem = useCallback(id => {
+// 		setTodoData(todoData => {
+// 			const idx = todoData.findIndex(el => el.id === id);
+// 			return [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
+// 		});
+// 	}, []);
+
+// 	const addItem = useCallback(text => {
+// 		const newItem = createTodoItem(text);
+// 		setTodoData(todoData => [...todoData, newItem]);
+// 	}, []);
+
+// 	const editItem = useCallback((id, editedItem) => {
+// 		setTodoData(todoData => {
+// 			const idx = todoData.findIndex(el => el.id === id);
+// 			const oldDataFile = todoData[idx];
+// 			const updatedDataFile = { ...oldDataFile, label: editedItem };
+// 			return [...todoData.slice(0, idx), updatedDataFile, ...todoData.slice(idx + 1)];
+// 		});
+// 	}, []);
+
+// 	const toggleProperty = (arr, id, propName) => {
+// 		const idx = arr.findIndex(el => el.id === id);
+// 		const oldItem = arr[idx];
+// 		const newItem = { ...oldItem, [propName]: !oldItem[propName] };
+// 		return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
+// 	};
+
+// 	const onToggleDone = useCallback(id => {
+// 		setTodoData(todoData => toggleProperty(todoData, id, 'done'));
+// 	}, []);
+
+// 	const search = (items, term) => {
+// 		if (term.length === 0) return items;
+// 		return items.filter(item => item.label.toLowerCase().includes(term.toLowerCase()));
+// 	};
+
+// 	const onSearchChange = useCallback(term => setTerm(term), []);
+
+// 	const filterItems = (items, filter) => {
+// 		switch (filter) {
+// 			case 'all':
+// 				return items;
+// 			case 'active':
+// 				return items.filter(item => !item.done);
+// 			case 'done':
+// 				return items.filter(item => item.done);
+// 			default:
+// 				return items;
+// 		}
+// 	};
+
+// 	const onFilterChange = useCallback(filter => setFilter(filter), []);
+
+// 	const onCleared = useCallback(() => {
+// 		setTodoData(todoData => todoData.filter(item => !item.done));
+// 	}, []);
+
+// 	const visibleItems = filterItems(search(todoData, term), filter);
+// 	const doneCount = todoData.filter(el => el.done).length;
+// 	const todoCount = todoData.length - doneCount;
+
+// 	return (
+// 		<div className="todoapp">
+// 			<AppHeader />
+// 			<NewTaskForm addItem={addItem} />
+// 			<TaskList todos={visibleItems} onDeleted={deleteItem} onEdited={editItem} onToggleDone={onToggleDone} />
+// 			<div className="footer">
+// 				<Footer count={todoCount} />
+// 				<TasksFilter filter={filter} onFilterChange={onFilterChange} onCleared={onCleared} />
+// 			</div>
+// 		</div>
+// 	);
+// };
+
+// App.defaultProps = {
+// 	todoData: [],
+// 	filter: 'all',
+// };
+
+// App.propTypes = {
+// 	todoData: PropTypes.array,
+// 	filter: PropTypes.string,
+// };
+
+// export default App;
 
 // версия на класс-компоненте:
 

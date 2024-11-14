@@ -1,81 +1,138 @@
-// переписанный на хуках компонент
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import PropTypes from 'prop-types';
 import './task.css';
 
-const TodoListItem = ({ label, onDeleted, onToggleDone, onEdited, done }) => {
-	const [isEditing, setIsEditing] = useState(false);
-	const [editedTask, setEditedTask] = useState(label);
-	const [createdTime, setCreatedTime] = useState(new Date());
-	const [editedTime, setEditedTime] = useState(null);
+const TodoListItem = ({ id, label, onDeleted, onEdited, onToggleDone, done, isNewTask }) => {
+  const existingElapsedTime = parseInt(localStorage.getItem(`timer-${id}`)) || 0;
+  const existingTimerActive = JSON.parse(localStorage.getItem(`timerActive-${id}`)) || false;
 
-	const beginEditing = () => setIsEditing(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState(label);
+  const [createdTime] = useState(new Date());
+  const [editedTime, setEditedTime] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(isNewTask ? 0 : existingElapsedTime);
+  const [timerActive, setTimerActive] = useState(isNewTask ? false : existingTimerActive);
 
-	const whatIsEditing = e => setEditedTask(e.target.value);
+  useEffect(() => {
+    let intervalId;
 
-	const saveChangesEditing = e => {
-		e.preventDefault();
-		if (editedTask.trim()) {
-			onEdited(editedTask);
-			setIsEditing(false);
-			setEditedTime(new Date());
-		}
-	};
+    if (timerActive) {
+      intervalId = startTimer();
+    }
 
-	const saveOnEnterKeyDown = e => {
-		if (e.key === 'Enter') {
-			saveChangesEditing(e);
-		}
-	};
+    return () => {
+      clearInterval(intervalId);
+      localStorage.setItem(`timer-${id}`, elapsedTime);
+      localStorage.setItem(`timerActive-${id}`, JSON.stringify(timerActive));
+    };
+  }, [timerActive, elapsedTime]);
 
-	const createTimestamp = () => {
-		const time = editedTime || createdTime;
-		const status = editedTime ? 'edited' : 'created';
-		return `${status} ${formatDistanceToNow(time, { includeSeconds: true, addSuffix: true })}`;
-	};
+  const startTimer = () => {
+    return setInterval(() => {
+      setElapsedTime((prevElapsedTime) => {
+        const newElapsedTime = prevElapsedTime + 1;
+        localStorage.setItem(`timer-${id}`, newElapsedTime);
+        return newElapsedTime;
+      });
+    }, 1000);
+  };
 
-	let classNames = 'todo-list-item description';
-	if (done) {
-		classNames += ' done completed';
-	}
+  const handleStartStop = () => {
+    if (timerActive) {
+      setTimerActive(false);
+    } else {
+      setTimerActive(true);
+    }
+  };
 
-	return (
-		<span className="todo-list">
-			<input className="toggle" type="checkbox" onChange={onToggleDone} checked={done} />
-			{isEditing ? (
-				<li className="editing">
-					<input type="text" value={editedTask} onChange={whatIsEditing} onKeyDown={saveOnEnterKeyDown} className="edit" onSubmit={saveChangesEditing} autoFocus />
-				</li>
-			) : (
-				<label className="todo-list-item" onClick={onToggleDone}>
-					<span className={classNames}>{label}</span>
-					<span className="created">{createTimestamp()}</span>
-				</label>
-			)}
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  };
 
-			<div type="button" className="btn" onClick={beginEditing}>
-				<i className="icon icon-edit" />
-			</div>
+  const handleToggleDone = () => {
+    onToggleDone(id);
+    if (!done) {
+      setTimerActive(false);
+    }
+  };
 
-			<div type="button" className="btn" onClick={onDeleted}>
-				<i className="icon icon-destroy" />
-			</div>
-		</span>
-	);
+  const saveChangesEditing = (e) => {
+    e.preventDefault();
+    if (editedTask.trim()) {
+      onEdited(editedTask);
+      setIsEditing(false);
+      setEditedTime(new Date());
+    }
+  };
+
+  const createTimestamp = () => {
+    return editedTime
+      ? `edited ${formatDistanceToNow(new Date(editedTime), { includeSeconds: true })}`
+      : `created ${formatDistanceToNow(new Date(createdTime), { includeSeconds: true })}`;
+  };
+
+  let classNames = 'todo-list-item description';
+  if (done) {
+    classNames += ' done completed';
+  }
+
+  return (
+    <span className="todo-list">
+      <input className="toggle" type="checkbox" onChange={handleToggleDone} checked={done} />
+      {isEditing ? (
+        <li className="editing">
+          <input
+            type="text"
+            value={editedTask}
+            onChange={(e) => setEditedTask(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && saveChangesEditing(e)}
+            className="edit"
+            autoFocus
+          />
+        </li>
+      ) : (
+        <label className="todo-list-item" onClick={handleToggleDone}>
+          <span className={classNames}>{label}</span>
+          <span className="created">{createTimestamp()}</span>
+        </label>
+      )}
+
+      <div className="timer">
+        <span>{formatTime(elapsedTime)}</span>
+        <button onClick={handleStartStop} className="icon-timer">
+          {timerActive ? '⏸' : '▶'}
+        </button>
+      </div>
+
+      <li className="btn" onClick={() => setIsEditing(true)}>
+        <i className="icon icon-edit" />
+      </li>
+
+      <li className="btn" onClick={onDeleted}>
+        <i className="icon icon-destroy" />
+      </li>
+    </span>
+  );
 };
 
 TodoListItem.defaultProps = {
-	filter: 'all',
+  filter: 'all',
+  done: false,
+  isNewTask: false,
 };
 
 TodoListItem.propTypes = {
-	filter: PropTypes.string.isRequired,
-	label: PropTypes.string.isRequired,
-	onEdited: PropTypes.func.isRequired,
-	onDeleted: PropTypes.func.isRequired,
-	onToggleDone: PropTypes.func.isRequired,
-	done: PropTypes.bool.isRequired,
+  filter: PropTypes.string,
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  onEdited: PropTypes.func.isRequired,
+  onDeleted: PropTypes.func.isRequired,
+  onToggleDone: PropTypes.func.isRequired,
+  done: PropTypes.bool,
+  isNewTask: PropTypes.bool,
 };
 
 export default TodoListItem;
